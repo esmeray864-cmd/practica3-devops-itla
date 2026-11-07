@@ -1,56 +1,264 @@
-# Plantilla DevOps — Electiva 1 (ITLA 2026-C-3)
+# Práctica 3: Configuración Básica de Pipeline CI/CD
 
-Aplicación web mínima (lista de tareas) con todo lo necesario para practicar un pipeline **CI/CD** sin cuentas pagas ni Azure:
+**Instituto Tecnológico de las Américas (ITLA)**  
+**Asignatura:** DevOps  
+**Proyecto:** Aplicación de gestión de tareas con Node.js, Express y GitHub Actions.
 
-| Pieza | Archivo | Para qué sirve |
+## 1. Descripción del proyecto
+
+Este proyecto consiste en implementar un pipeline de Integración Continua y Despliegue Continuo (CI/CD) utilizando GitHub Actions para automatizar la revisión, ejecución de pruebas, construcción y publicación de una aplicación web.
+
+Se utilizó la plantilla oficial proporcionada para la Práctica 3, agregando nuevas funcionalidades y pruebas automatizadas.
+
+## 2. Tecnologías utilizadas
+
+- Node.js 26.13.0.
+- npm 11.20.0.
+- JavaScript.
+- Express.
+- Jest y Supertest.
+- Git y GitHub.
+- GitHub Actions.
+- Docker.
+- GitHub Pages.
+
+## 3. Estructura del proyecto
+
+```text
+plantilla-devops-itla/
+│
+├── .github/
+│   └── workflows/
+│       └── ci.yml
+│
+├── public/
+│   └── index.html
+│
+├── src/
+│   ├── app.js
+│   └── server.js
+│
+├── tests/
+│   └── app.test.js
+│
+├── Dockerfile
+├── package.json
+├── package-lock.json
+└── README.md
+```
+
+## 4. Funcionalidad implementada
+
+Se agregó la funcionalidad para eliminar tareas mediante el método HTTP DELETE.
+
+**Endpoint:**
+
+`DELETE /api/tareas/:id`
+
+La funcionalidad permite:
+
+- Buscar una tarea por su identificador.
+- Eliminar la tarea cuando existe.
+- Devolver un código HTTP 404 cuando no se encuentra.
+- Mostrar un mensaje de confirmación cuando la eliminación es exitosa.
+
+## 5. Pruebas automatizadas
+
+Se utilizaron Jest y Supertest para comprobar el funcionamiento de la aplicación.
+
+Se agregaron dos pruebas nuevas:
+
+1. Verificar que una tarea existente pueda eliminarse correctamente.
+2. Verificar que intentar eliminar una tarea inexistente devuelva un error 404.
+
+**Resultados obtenidos:**
+
+- Total de pruebas: 8.
+- Pruebas aprobadas: 8.
+- Pruebas fallidas: 0.
+
+### Cobertura de código
+
+| Indicador | Resultado |
+|---|---:|
+| Statements | 95.55% |
+| Branches | 85.71% |
+| Functions | 100% |
+| Lines | 100% |
+
+## 6. Configuración del pipeline CI/CD
+
+El pipeline se encuentra configurado en:
+
+`.github/workflows/ci.yml`
+
+Se ejecuta automáticamente cuando se realiza un push a la rama `main` o un pull request dirigido a dicha rama.
+
+### Etapas del pipeline
+
+**Etapa 1. Checkout**
+
+Descarga el código fuente del repositorio utilizando GitHub Actions.
+
+**Etapa 2. Configuración de Node.js**
+
+Prepara el entorno de ejecución utilizando Node.js 20.
+
+**Etapa 3. Instalación de dependencias**
+
+Ejecuta `npm install` para instalar los paquetes necesarios.
+
+**Etapa 4. Revisión estática**
+
+Ejecuta `npm run lint` para comprobar la sintaxis de los archivos JavaScript.
+
+**Etapa 5. Pruebas automatizadas**
+
+Ejecuta `npm test` para realizar las pruebas unitarias y de integración con Jest, incluyendo el reporte de cobertura.
+
+**Etapa 6. Construcción de Docker**
+
+Construye una imagen Docker de la aplicación para verificar que pueda empaquetarse correctamente.
+
+**Etapa 7. Despliegue a GitHub Pages**
+
+Cuando el pipeline termina correctamente en un push a `main`, publica automáticamente el contenido de la carpeta `public`.
+
+El despliegue depende de que el trabajo de construcción y pruebas haya finalizado exitosamente.
+
+## 7. Configuración de GitHub Pages
+
+Se habilitó GitHub Pages desde:
+
+Settings → Pages → Build and deployment → Source → GitHub Actions.
+
+La aplicación se encuentra publicada en:
+
+https://esmeray864-cmd.github.io/practica3-devops-itla/
+
+## 8. Demostración del pipeline
+
+Para comprobar el funcionamiento del pipeline se realizaron tres ejecuciones:
+
+| Ejecución | Descripción | Resultado |
 |---|---|---|
-| App Node.js/Express | `src/app.js`, `src/server.js` | API de tareas + `/health` y `/metrics` |
-| Frontend estático | `public/index.html` | Se publica en GitHub Pages |
-| Pruebas automatizadas | `tests/app.test.js` | Jest + Supertest con cobertura |
-| Contenedor | `Dockerfile` | Imagen de producción con *healthcheck* |
-| Pipeline | `.github/workflows/ci.yml` | Lint → pruebas → build Docker → deploy a Pages |
+| #1 | Primera versión del proyecto | SUCCESS |
+| #2 | Prueba fallida intencionalmente | FAILURE |
+| #3 | Corrección de la prueba | SUCCESS |
 
-## Requisitos (gratis)
-- Cuenta de **GitHub** (usa un repositorio **público**: GitHub Actions es gratuito).
-- **Git** y **Node.js 20+**. Opcional para probar el contenedor en tu PC: **Docker Desktop**.
+### Prueba de fallo
 
-## Ejecutar en tu computadora
+Se introdujo intencionalmente una prueba incorrecta:
+
+```javascript
+expect(1).toBe(2);
+```
+
+Al subir los cambios al repositorio, GitHub Actions detectó el error y el trabajo de construcción y pruebas falló.
+
+El despliegue no se ejecutó debido a que depende de la aprobación del trabajo anterior.
+
+### Corrección
+
+Se eliminó la prueba incorrecta y se ejecutaron nuevamente las ocho pruebas automatizadas.
+
+Todas las pruebas pasaron y el pipeline volvió a ejecutarse correctamente, incluyendo el despliegue a GitHub Pages.
+
+Esto demuestra que la automatización identifica errores y evita publicar cambios que no superan las validaciones.
+
+## 9. Instrucciones para instalar y ejecutar el proyecto
+
+### Requisitos
+
+- Node.js 20 o superior.
+- Git.
+- Visual Studio Code u otro editor de código.
+
+### Instalación
+
+Clonar el repositorio:
+
+```bash
+git clone https://github.com/esmeray864-cmd/practica3-devops-itla.git
+```
+
+Entrar en la carpeta:
+
+```bash
+cd practica3-devops-itla
+```
+
+Instalar dependencias:
+
 ```bash
 npm install
-npm test          # pruebas + cobertura
-npm start         # http://localhost:3000
 ```
-Endpoints: `GET /health`, `GET /metrics`, `GET/POST /api/tareas`, `PATCH /api/tareas/:id`.
 
-Con Docker:
+Ejecutar pruebas:
+
+```bash
+npm test
+```
+
+Ejecutar revisión estática:
+
+```bash
+npm run lint
+```
+
+Iniciar la aplicación:
+
+```bash
+npm start
+```
+
+La aplicación estará disponible localmente en:
+
+`http://localhost:3000`
+
+### Construcción con Docker
+
 ```bash
 docker build -t tareas-devops .
+```
+
+Ejecutar el contenedor:
+
+```bash
 docker run -p 3000:3000 tareas-devops
 ```
 
-## Subirlo a GitHub y activar el pipeline
-1. Crea un repositorio **público** vacío en GitHub (sin README).
-2. En la carpeta de la plantilla:
-   ```bash
-   git init
-   git add .
-   git commit -m "Plantilla inicial"
-   git branch -M main
-   git remote add origin https://github.com/TU_USUARIO/TU_REPO.git
-   git push -u origin main
-   ```
-3. En GitHub: **Settings → Pages → Source: GitHub Actions**.
-4. Abre la pestaña **Actions**: verás el workflow *CI/CD* ejecutándose. Cuando termine, la URL de tu página aparece en el job *Despliegue a GitHub Pages*.
+## 10. Guía de contribución
 
-## Práctica 3 — qué debes agregar
-- Al menos **2 pruebas nuevas** (por ejemplo: borrar tareas, validar títulos largos).
-- Una funcionalidad nueva pequeña con su prueba (ej. `DELETE /api/tareas/:id`).
-- Provocar a propósito una prueba fallida, mostrar que el pipeline se pone en **rojo**, corregirla y mostrarlo en **verde**.
-- Completar este README con la explicación de cada etapa del pipeline.
+Para contribuir al proyecto:
 
-## Proyecto Final — cómo extenderla
-- Persistencia con **SQLite** (o MongoDB) en lugar del arreglo en memoria.
-- Publicar la imagen en **GitHub Container Registry** (`ghcr.io`) desde el pipeline.
-- Análisis estático real (ESLint) y umbral de cobertura mínima.
-- Monitoreo: usar `/metrics` y los logs JSON; definir al menos una **alerta** (ej. errores > 0).
-- Documentar: guía de instalación, manual de operaciones y lecciones aprendidas.
+1. Clonar el repositorio.
+2. Crear una rama para los cambios.
+3. Implementar las modificaciones.
+4. Agregar o actualizar las pruebas.
+5. Ejecutar `npm test`.
+6. Ejecutar `npm run lint`.
+7. Realizar un commit.
+8. Subir los cambios y crear un pull request.
+
+Los cambios deben superar las validaciones automatizadas antes de integrarse a la rama principal.
+
+## 11. Conclusiones
+
+La práctica permitió implementar un pipeline CI/CD básico utilizando GitHub Actions.
+
+Se logró automatizar la revisión estática, las pruebas, la construcción de una imagen Docker y el despliegue de una aplicación web mediante GitHub Pages.
+
+También se implementó una nueva funcionalidad para eliminar tareas y se agregaron pruebas automatizadas para validar su funcionamiento.
+
+Finalmente, se comprobó la capacidad del pipeline para detectar errores y recuperarse después de su corrección.
+
+El proyecto demuestra la importancia de la automatización en los procesos de desarrollo de software y la integración continua.
+
+---
+
+**Repositorio GitHub:**  
+https://github.com/esmeray864-cmd/practica3-devops-itla
+
+**Aplicación publicada:**  
+https://esmeray864-cmd.github.io/practica3-devops-itla/
