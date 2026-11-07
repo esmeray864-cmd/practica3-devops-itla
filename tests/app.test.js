@@ -62,6 +62,3 @@ describe('API de tareas', () => {
   });
 });
 
-test('Demostración de fallo intencional del pipeline', () => {
-    expect(1).toBe(2);
-});
