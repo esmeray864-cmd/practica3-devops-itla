@@ -61,3 +61,7 @@ describe('API de tareas', () => {
     expect(r.body.solicitudes).toBeGreaterThanOrEqual(2);
   });
 });
+
+test('Demostración de fallo intencional del pipeline', () => {
+    expect(1).toBe(2);
+});
